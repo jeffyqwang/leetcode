@@ -1,0 +1,13 @@
+{
+  "name": "leetcode",
+  "version": "1.0.0",
+  "description": "jeff's leetcode record",
+  "main": "index.js",
+  "repository": "git@github.com:jefferyol/leetcode.git",
+  "author": "jeffery<github.com/jefferyol>",
+  "license": "MIT",
+  "private": false,
+  "dependencies": {
+    "typescript": "^5.3.3"
+  }
+}
