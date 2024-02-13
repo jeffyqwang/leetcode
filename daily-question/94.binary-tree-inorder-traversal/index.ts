@@ -1,23 +1,14 @@
-class TreeNode {
-     val: number
-      left: TreeNode | null
-      right: TreeNode | null
-      constructor(val?: number, left?: TreeNode | null, right?: TreeNode | null) {
-          this.val = (val===undefined ? 0 : val)
-          this.left = (left===undefined ? null : left)
-          this.right = (right===undefined ? null : right)
-      }
-  }
-interface TreeNode{
-    val: number
-    left: TreeNode | null
-    right: TreeNode | null
-}
-function inorderTraversal(root: TreeNode | null): number[] {
+
+//in order 意思是中序遍历
+
+import { ITreeNode } from '../../data-structure/Tree/TreeNode';
+
+//中序遍历是左根右
+export function inorderTraversal(root: ITreeNode | null): number[] {
    if(!root)return[];
     const result: number[] = [];
-    const stack:TreeNode[] = [];
-    let _root: TreeNode | null = root;
+    const stack:ITreeNode[] = [];
+    let _root: ITreeNode | null = root;
     while(_root||stack.length){
       while(_root){
         stack.push(_root);
@@ -29,5 +20,3 @@ function inorderTraversal(root: TreeNode | null): number[] {
     }
     return result;
 };
-const root = new TreeNode(1,null,new TreeNode(2,new TreeNode(3,null,null),null))
-console.log(inorderTraversal(root))
