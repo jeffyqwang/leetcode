@@ -1,5 +1,4 @@
 import { TreeNode } from '../../data-structure/Tree/TreeNode';
-import { recordFunctionExecutionTime } from '../../utils/tool';
 
 // 后序遍历 (Post-order Traversal)
 //后序遍历是左右根
