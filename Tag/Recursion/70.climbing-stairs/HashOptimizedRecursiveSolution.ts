@@ -9,20 +9,16 @@
 
 // @lcpr-template-end
 // @lc code=start
-function climbStairs(n: number): number {
+const hasSolvedList = new Map<number, number>();
+export function climbStairs(n: number): number {
   //递推公式，第n阶楼梯有两种走法，一步一阶和一步两阶，所以f(n) = f(n-1)+f(n-2)
   //终止条件为f(1) = 1, f(2) = 2;
   //实际上为斐波那契数列
   if (n === 1) return 1;
   if (n === 2) return 2;
-  let res = 0,
-    pre = 2,
-    prepre = 1;
-  for (let i = 3; i <= n; i++) {
-    res = pre + prepre;
-    prepre = pre;
-    pre = res;
-  }
+  if (hasSolvedList.has(n)) return hasSolvedList.get(n)!;
+  const res = climbStairs(n - 1) + climbStairs(n - 2);
+  hasSolvedList.set(n, res);
   return res;
 }
 // @lc code=end
