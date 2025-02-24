@@ -1,0 +1,12 @@
+{
+  "compilerOptions": {
+    "target": "ES2015", // 编译目标为 ES2015（支持 Array.from）
+    "lib": ["ES2015", "DOM"], // 引入 ES2015 和 DOM 类型声明
+    "module": "CommonJS", // 模块系统（根据项目需求选择）
+    "strict": true, // 启用严格类型检查
+    "esModuleInterop": true, // 改善模块兼容性
+    "outDir": "./dist" // 输出目录
+  },
+  "include": ["src/**/*"], // 指定编译的源码目录
+  "exclude": ["node_modules"] // 排除无需编译的目录
+}
