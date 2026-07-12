@@ -1,0 +1,52 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## 这是什么
+
+jeff 的个人 LeetCode 刷题记录，全部用 TypeScript,面向 **leetcode.cn**。文件通过 VS Code 的 LeetCode 插件 + **lcpr**（"LeetCode Problem Runner"）插件生成,所以每个解答文件都带 `@lc` / `@lcpr` 标记注释。解答里的注释用中文写。
+
+## 协作方式（重要:这是复健练习仓)
+
+本仓库是 jeff 的**刻意练习/复健**场景(资深前端,手生复健),不是普通业务仓。在这里默认走全局的**学习模式**:
+
+- **主要解法由 jeff 自己写。** Claude 的职责是拆小任务、指出复杂度/bug/写法问题、给数据结构和思路方向、写完后 review——**不要直接甩完整解答**。
+- 卡住时走**提示阶梯**(问卡在哪 → 概念提示 → 方向/伪码 → 完整答案),每级停等;jeff 说「给代码/直接给」才跳到完整实现。
+- jeff 的代码报错时**不抢着修**:先让他读报错、说诊断,Claude 只提问引导。
+- 概念/原理问题随问随答讲透——门槛只针对"替他写/替他修"。
+
+## 命令
+
+- **构建(类型检查 + 产出):** `yarn build`(执行 `tsc`,产物到 `dist/`)。没有 lint / test 脚本。
+- **跑解答:** 解答通过 lcpr VS Code 插件执行,用每个文件底部内嵌的测试用例(`// @lcpr case=start … case=end` 块)。**没有命令行测试运行器。** 若要在终端独立运行,必须先编译(`yarn build`)再 `node dist/<path>.js`——因为 `"type": "module"` + ES6 模块导致源码 `.ts` 不能直接跑。
+
+## 解答文件结构
+
+每个题目文件遵循 lcpr 模板——**不要删这些标记**,插件依赖它们:
+
+```
+/* @lc app=leetcode.cn id=<n> lang=typescript ... */
+// @lc code=start
+<解答 —— 一个裸的 `function name(...)` 声明,或"设计题"用 class>
+// @lc code=end
+/* // @lcpr case=start  <输入>  // @lcpr case=end   (每个测试用例一个块) */
+```
+
+- 被评测的解答放在 `@lc code=start`/`end` 之间。LeetCode 会把它注入到自己的运行框架,所以入口函数/类是**顶层声明,通常不 `export`**。
+- 同一文件夹里的其它解法文件(如 `BruteForceSolution.ts`、`GapBufferSolution.ts`、`IterativeSolution.ts`)**会 `export`** 自己的函数,方便 import 进来和 `index.ts` 做性能对比。
+
+## 目录结构
+
+- `src/daily-question/<id>.<slug>/` — 每日一题。`index.ts` 是当前/主要解法,同级文件按其演示的解法命名。
+- `src/Tag/<分类>/<id>.<slug>/` — 按主题分组的题(`LinkedList`、`Recursion`、`String`…),同样是"一个文件夹多个解法"的约定。
+- `neetcode-2026/` — 较新的 NeetCode roadmap 题,目前是扁平结构(每题一个 `<id>.<slug>.ts`,没有单题文件夹)。
+- `src/Algorithm/` — 独立的算法实现(如各种排序),不绑定具体题目。
+- `src/data-structure/` — 可复用结构(`LinkedList`、`DoubleLinkedList`、`Tree/TreeNode`),供解答 import。
+- `src/utils/` — 辅助函数:`convertArrayToTree`(把 LeetCode 数组转成 `TreeNode`)、`recordFunctionExecutionTime`(计时包装,用于对比不同解法)。
+
+## 约定
+
+- 仓库只提交源码:`.gitignore` 排除 `*.js`,所以编译产物和 `dist/` 里的 JS 不进 git。路径别名 `@/*` → `src/*` 在 `tsconfig.json` 里配置。
+- `tsconfig` 的 `strict` **关着**——解答里可以随意用非空断言(`!`)和宽松类型。
+- 加新题时,照着相邻文件夹的样子做:保留 lcpr 标记,主要解法放 `index.ts`,每种额外解法各自一个描述性命名、会 `export` 的文件。
+- Commit message 风格(观察到的):`feat: <动词> for leetcode <id> - <题目名>`。
