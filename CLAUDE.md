@@ -15,6 +15,18 @@ jeff 的个人 LeetCode 刷题记录，全部用 TypeScript,面向 **leetcode.cn
 - jeff 的代码报错时**不抢着修**:先让他读报错、说诊断,Claude 只提问引导。
 - 概念/原理问题随问随答讲透——门槛只针对"替他写/替他修"。
 
+## 一道题的流程（陪练会话不用再靠开场 prompt 交代）
+
+1. **开工**:jeff 用 Raycast `lc` 打开下一题(lcpr 生成文件到 `neetcode-2026/`)。他说写完了 → 读该题文件 + `错题本.md`。
+2. **review / 优化**:**一次只问一个启发式问题,等他答完再问下一个**;不给答案,问题从「行为/复杂度/API 语义/取舍」里挑。
+   对照错题本:踩中已有断点要点明「这是 A? 复现」。
+3. **收尾**(review 通过后):
+   - 提醒他提交:**先用插件提交**;报 `session expired` 就改去 leetcode.cn 网页提交(插件把 Cloudflare 403 误报成登录过期)。
+   - Claude 只 `git add` 该题文件并提交,message 用 `feat: add leetcode <id> <英文题名> solution`。
+   - 就职块**自动记账**(WakaTime 时长 + 当天提交的题号,`jobblock.py` 同步),⛔ 不用问他刷了多久。
+   - 有复现或新的反射断点 → **直接**按 `/cuoti` 的格式记进错题本(复现=在原条目补「<题号> 复现」),⛔ 不用先问他(2026-10-13 他说「不用每次都问我」)。
+   - 下一题:让他在 Raycast 敲 `lc`(不填题号 = 队列里的下一题)。
+
 ## 命令
 
 - **构建(类型检查 + 产出):** `yarn build`(执行 `tsc`,产物到 `dist/`)。没有 lint / test 脚本。
@@ -49,4 +61,4 @@ jeff 的个人 LeetCode 刷题记录，全部用 TypeScript,面向 **leetcode.cn
 - 仓库只提交源码:`.gitignore` 排除 `*.js`,所以编译产物和 `dist/` 里的 JS 不进 git。路径别名 `@/*` → `src/*` 在 `tsconfig.json` 里配置。
 - `tsconfig` 的 `strict` **关着**——解答里可以随意用非空断言(`!`)和宽松类型。
 - 加新题时,照着相邻文件夹的样子做:保留 lcpr 标记,主要解法放 `index.ts`,每种额外解法各自一个描述性命名、会 `export` 的文件。
-- Commit message 风格(观察到的):`feat: <动词> for leetcode <id> - <题目名>`。
+- Commit message 风格:`feat: add leetcode <id> <英文题名> solution`(见上面「一道题的流程」)。
