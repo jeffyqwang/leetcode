@@ -21,6 +21,7 @@ jeff 的个人 LeetCode 刷题记录，全部用 TypeScript,面向 **leetcode.cn
 1. **开工**:jeff 用 Raycast `lc` 打开下一题(lcpr 生成文件到 `neetcode-2026/`)。他说写完了 → 读该题文件 + `错题本.md`。
    - **日语对照(自动)**:`lc` 会在后台拉起 `shared-config/scripts/jobhunt/lc_jp.py`,文件一生成就插「【問題(日本語)】题干 + 制約 + 【用語】」并追加 `技術用語.md`(用语只取题干里的词,不剧透解法;日志 `~/.cache/jobhunt/lc_jp.log`)。review 时发现文件里没有日语段 → 手动补:`python3 ~/.claude/memory-backup-repo/shared-config/scripts/jobhunt/lc_jp.py <题号> --now`。review 中讨论到的解法用语(如 早期リターン)由 Claude 补进该题【用語】和 `技術用語.md`。
 2. **review / 优化**:**先问他用 `yarn t` 跑过哪些反例**(空/最小、长度不同、多位数/极端值);没跑就让他先加 case 跑一遍再 review(2026-10-14:三道题的边界 bug 都是没自测漏掉的)。
+   顺序是**先写 `// expect=` 再跑**:写期望值 = 脑内过一遍(练面试时没法运行的场景),跑 = 验证推理。期望值本身推错了 → 是理解偏差,记错题本。
    **一次只问一个启发式问题,等他答完再问下一个**;不给答案,问题从「行为/复杂度/API 语义/取舍」里挑。
    对照错题本:踩中已有断点要点明「这是 A? 复现」。
 3. **收尾**(review 通过后):
