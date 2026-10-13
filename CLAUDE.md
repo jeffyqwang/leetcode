@@ -12,6 +12,7 @@ jeff 的个人 LeetCode 刷题记录，全部用 TypeScript,面向 **leetcode.cn
 
 - **主要解法由 jeff 自己写。** Claude 的职责是拆小任务、指出复杂度/bug/写法问题、给数据结构和思路方向、写完后 review——**不要直接甩完整解答**。
 - 卡住时走**提示阶梯**(问卡在哪 → 概念提示 → 方向/伪码 → 完整答案),每级停等;jeff 说「给代码/直接给」才跳到完整实现。
+- ⛔ **API 知识直接告诉他,别当思考题。** 「有没有某个 API 能做 X」这种不知道就推不出来的问题,直接给出 API 和签名,让他判断怎么用;启发式提问只留给能靠推理得出的东西(2026-10-14 他原话「这个是API使用问题吧 我不知道的话我根本没得想」)。
 - jeff 的代码报错时**不抢着修**:先让他读报错、说诊断,Claude 只提问引导。
 - 概念/原理问题随问随答讲透——门槛只针对"替他写/替他修"。
 
@@ -32,6 +33,8 @@ jeff 的个人 LeetCode 刷题记录，全部用 TypeScript,面向 **leetcode.cn
 
 - **构建(类型检查 + 产出):** `yarn build`(执行 `tsc`,产物到 `dist/`)。没有 lint / test 脚本。
 - **跑解答:** 解答通过 lcpr VS Code 插件执行,用每个文件底部内嵌的测试用例(`// @lcpr case=start … case=end` 块)。**没有命令行测试运行器。** 若要在终端独立运行,必须先编译(`yarn build`)再 `node dist/<path>.js`——因为 `"type": "module"` + ES6 模块导致源码 `.ts` 不能直接跑。
+- **多解对比:** 想把一道题做透时,在 `neetcode-2026/<id>.<slug>/` 下放各解法(`export` 函数)+ `bench.ts`(判对错 + 计时),`node neetcode-2026/<id>.<slug>/bench.ts` 直接跑——Node 24 能直接执行 `.ts`(仅限无路径别名的独立文件)。样板见 `49.group-anagrams/`。
+- ⚠️ `tsconfig.json` 的 `include` 只有 `src/`,**`tsc -p .` 不检查 `neetcode-2026/`**;要检查单题用 `npx tsc --noEmit --target es2020 --lib es2020 <文件>`。
 
 ## 解答文件结构
 
