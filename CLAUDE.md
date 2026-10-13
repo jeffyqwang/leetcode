@@ -20,7 +20,8 @@ jeff 的个人 LeetCode 刷题记录，全部用 TypeScript,面向 **leetcode.cn
 
 1. **开工**:jeff 用 Raycast `lc` 打开下一题(lcpr 生成文件到 `neetcode-2026/`)。他说写完了 → 读该题文件 + `错题本.md`。
    - **日语对照(自动)**:`lc` 会在后台拉起 `shared-config/scripts/jobhunt/lc_jp.py`,文件一生成就插「【問題(日本語)】题干 + 制約 + 【用語】」并追加 `技術用語.md`(用语只取题干里的词,不剧透解法;日志 `~/.cache/jobhunt/lc_jp.log`)。review 时发现文件里没有日语段 → 手动补:`python3 ~/.claude/memory-backup-repo/shared-config/scripts/jobhunt/lc_jp.py <题号> --now`。review 中讨论到的解法用语(如 早期リターン)由 Claude 补进该题【用語】和 `技術用語.md`。
-2. **review / 优化**:**一次只问一个启发式问题,等他答完再问下一个**;不给答案,问题从「行为/复杂度/API 语义/取舍」里挑。
+2. **review / 优化**:**先问他用 `yarn t` 跑过哪些反例**(空/最小、长度不同、多位数/极端值);没跑就让他先加 case 跑一遍再 review(2026-10-14:三道题的边界 bug 都是没自测漏掉的)。
+   **一次只问一个启发式问题,等他答完再问下一个**;不给答案,问题从「行为/复杂度/API 语义/取舍」里挑。
    对照错题本:踩中已有断点要点明「这是 A? 复现」。
 3. **收尾**(review 通过后):
    - 提醒他提交:**先用插件提交**;报 `session expired` 就改去 leetcode.cn 网页提交(插件把 Cloudflare 403 误报成登录过期)。
@@ -32,7 +33,7 @@ jeff 的个人 LeetCode 刷题记录，全部用 TypeScript,面向 **leetcode.cn
 ## 命令
 
 - **构建(类型检查 + 产出):** `yarn build`(执行 `tsc`,产物到 `dist/`)。没有 lint / test 脚本。
-- **跑解答:** 解答通过 lcpr VS Code 插件执行,用每个文件底部内嵌的测试用例(`// @lcpr case=start … case=end` 块)。**没有命令行测试运行器。** 若要在终端独立运行,必须先编译(`yarn build`)再 `node dist/<path>.js`——因为 `"type": "module"` + ES6 模块导致源码 `.ts` 不能直接跑。
+- **跑解答(本地,首选):** `yarn t <题目文件.ts>` —— `scripts/lctest.ts` 抽出 `@lc code` 区的函数,用文件底部的 `@lcpr case` 逐个跑并打印输出;某个 `case=end` 下一行写 `// expect=<JSON>` 就自动判 ✅/❌。VS Code 里 ⌘⇧P → `Tasks: Run Test Task` 跑当前文件。只支持函数题(设计题 class 暂不支持)。插件的 Test 和网页跑用例都慢/不稳,所以 jeff 写完先本地跑反例。
 - **多解对比:** 想把一道题做透时,在 `neetcode-2026/<id>.<slug>/` 下放各解法(`export` 函数)+ `bench.ts`(判对错 + 计时),`node neetcode-2026/<id>.<slug>/bench.ts` 直接跑——Node 24 能直接执行 `.ts`(仅限无路径别名的独立文件)。样板见 `49.group-anagrams/`。
 - ⚠️ `tsconfig.json` 的 `include` 只有 `src/`,**`tsc -p .` 不检查 `neetcode-2026/`**;要检查单题用 `npx tsc --noEmit --target es2020 --lib es2020 <文件>`。
 

@@ -1,0 +1,14 @@
+{
+  // ⌘⇧P → Tasks: Run Test Task → 用当前打开的题目文件跑本地用例(scripts/lctest.ts)
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "lctest 当前文件",
+      "type": "shell",
+      "command": "node --no-warnings scripts/lctest.ts '${file}'",
+      "group": { "kind": "test", "isDefault": true },
+      "presentation": { "reveal": "always", "clear": true },
+      "problemMatcher": []
+    }
+  ]
+}

@@ -7,9 +7,10 @@
   "author": "jeffery<github.com/jefferyol>",
   "license": "MIT",
   "private": false,
-  "type":"module",
+  "type": "module",
   "scripts": {
-    "build": "tsc"
+    "build": "tsc",
+    "t": "node --no-warnings scripts/lctest.ts"
   },
   "dependencies": {
     "typescript": "^5.7.3"
