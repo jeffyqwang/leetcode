@@ -2,9 +2,11 @@
 //   yarn t neetcode-2026/242.valid-anagram.ts
 // 用例就是文件底部的 `// @lcpr case=start … case=end` 块(插件也认),想加反例就照样加一块。
 // 想自动判对错:在某个 case=end 下一行写 `// expect=<JSON>`,如 `// expect=false`。
-// 题目说「任意顺序返回」→ 写 `// expect~=<JSON>`:顶层数组先排序再比较。
+// 题目说「任意顺序返回」→ 写 `// expect~=<JSON>`:每一层数组都排序后再比较。
+// 题面「示例」里有的用例不用写 expect:自动从 lcpr 缓存的题面取「输出」(标 [题面示例])。
 // 只支持函数题;设计题(class)暂不支持。Node 24 直接执行 .ts(类型擦除),不用 build。
-import { readFileSync, writeFileSync, mkdtempSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdtempSync, readdirSync } from 'node:fs';
+import { homedir } from 'node:os';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
@@ -28,13 +30,34 @@ if (!fn || /^\s*class\s/m.test(code)) {
   process.exit(1);
 }
 
-const cases: { args: unknown[]; expect?: unknown; unordered?: boolean }[] = [];
+const cases: { args: unknown[]; expect?: unknown; unordered?: boolean; auto?: boolean }[] = [];
 const re = /\/\/ @lcpr case=start\s*\n\/\/ (.*)\n\/\/ @lcpr case=end(?:[ \t]*\n\/\/ expect(~?)=(.*))?/g;
 for (const m of src.matchAll(re)) {
   const args = m[1].split('\\n').filter((s) => s.trim() !== '').map((s) => JSON.parse(s));
   if (m[3] === undefined) cases.push({ args });
   else cases.push({ args, expect: JSON.parse(m[3]), unordered: m[2] === '~' });
 }
+// 没写 expect 的用例:去 lcpr 缓存的题面里找同输入的「示例」,自动拿它的「输出」当期望值
+// (题面说「任意顺序」就按不计顺序比)。手写的 expect 优先。
+const pid = src.match(/@lc app=\S+ id=(\d+)/)?.[1];
+try {
+  const dir = join(homedir(), '.lcpr', 'leetcode', 'cache');
+  const hit = pid && readdirSync(dir).find((f) => f.startsWith(pid + '.') && f.endsWith('.algorithms.json'));
+  if (hit) {
+    const desc: string = JSON.parse(readFileSync(join(dir, hit), 'utf8')).desc ?? '';
+    const text = desc.replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
+    const unordered = /任意顺序/.test(text);
+    for (const m of text.matchAll(/输入[:：]\s*(.+?)\s*\n\s*输出[:：]\s*(.+?)\s*\n/g)) {
+      // "nums = [1,1,1,2,2,3], k = 2" → 按 `, 名字 =` 切参数
+      const args = m[1].split(/,\s*(?=[A-Za-z_]\w*\s*=)/).map((p) => JSON.parse(p.replace(/^\s*[A-Za-z_]\w*\s*=\s*/, '')));
+      const c = cases.find((x) => !('expect' in x) && JSON.stringify(x.args) === JSON.stringify(args));
+      if (c) Object.assign(c, { expect: JSON.parse(m[2]), unordered, auto: true });
+    }
+  }
+} catch {
+  // 缓存读不到/题面格式变了:只是少了自动期望值,照常跑
+}
+
 if (!cases.length) {
   console.error('文件里没有 @lcpr case');
   process.exit(1);
@@ -47,21 +70,24 @@ ${code}
 const __cases = ${JSON.stringify(cases)};
 let __fail = 0;
 const __cmp = (a, b) => (JSON.stringify(a) < JSON.stringify(b) ? -1 : JSON.stringify(a) > JSON.stringify(b) ? 1 : 0);
+// 不计顺序 = 每一层数组都排序后再比(49 这类组间、组内都任意)
+const __norm = (v) => (Array.isArray(v) ? v.map(__norm).sort(__cmp) : v);
 __cases.forEach((c, i) => {
   const input = c.args.map((a) => JSON.stringify(a)).join(', ');
   let out, mark = '  ';
   try {
     const v = ${fn}(...structuredClone(c.args));
-    out = JSON.stringify(c.unordered && Array.isArray(v) ? [...v].sort(__cmp) : v);
+    out = JSON.stringify(c.unordered ? __norm(v) : v);
   } catch (e) {
     out = '💥 ' + e;
     __fail++;
   }
   if ('expect' in c) {
-    const exp = c.unordered && Array.isArray(c.expect) ? [...c.expect].sort(__cmp) : c.expect;
+    const exp = c.unordered ? __norm(c.expect) : c.expect;
     const ok = out === JSON.stringify(exp);
     mark = ok ? '✅' : '❌';
     if (c.unordered) out += '  (不计顺序)';
+    if (c.auto) out += '  [题面示例]';
     if (!ok) { __fail++; out += '   (期望 ' + JSON.stringify(c.expect) + ')'; }
   }
   console.log(mark + ' #' + (i + 1) + '  ' + input + '  →  ' + out);
