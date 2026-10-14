@@ -26,11 +26,14 @@
 // @lc code=start
 function topKFrequent(nums: number[], k: number): number[] {
   const map: Map<number, number> = new Map();
+  let maxCount = 0;
   nums.forEach((v) => {
-    map.set(v, (map.get(v) ?? 0) + 1);
+    const count = map.get(v) ?? 0;
+    map.set(v, count + 1);
+    if (count + 1 > maxCount) maxCount = count + 1;
   });
 
-  const bunkets = new Array<number[]>(nums.length + 1);
+  const bunkets = new Array<number[]>(maxCount + 1);
   [...map.keys()].forEach((key) => {
     const value = map.get(key) ?? 0;
     if (!bunkets[value]) bunkets[value] = [];
@@ -71,5 +74,10 @@ function topKFrequent(nums: number[], k: number): number[] {
 // [5,5,5,5]\n1\n
 // @lcpr case=end
 // expect=[5]
+
+// @lcpr case=start
+// [-1,-1,-1,2]\n1\n
+// @lcpr case=end
+// expect=[-1]
 
  */
