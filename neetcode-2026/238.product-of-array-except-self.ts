@@ -25,7 +25,7 @@
 // @lcpr-template-end
 // @lc code=start
 function productExceptSelf(nums: number[]): number[] {
-  const res: number[] = [];
+  const res: number[] = new Array(nums.length);
 
   res[0] = 1;
   let right = 1;
