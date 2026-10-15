@@ -5,16 +5,26 @@
 // 题目说「任意顺序返回」→ 写 `// expect~=<JSON>`:每一层数组都排序后再比较。
 // 题面「示例」里有的用例不用写 expect:自动从 lcpr 缓存的题面取「输出」(标 [题面示例])。
 // 只支持函数题;设计题(class)暂不支持。Node 24 直接执行 .ts(类型擦除),不用 build。
-import { readFileSync, writeFileSync, mkdtempSync, readdirSync } from 'node:fs';
+import { readFileSync, writeFileSync, mkdtempSync, readdirSync, statSync } from 'node:fs';
 import { homedir } from 'node:os';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { spawnSync } from 'node:child_process';
 
-const file = process.argv[2];
+// 不传参数 = 跑 neetcode-2026/ 里最近改过的题(正在写的那道)
+const file = process.argv[2] ?? latestProblem();
 if (!file) {
-  console.error('用法:yarn t <题目文件.ts>');
+  console.error('用法:yarn t [题目文件.ts]');
   process.exit(1);
+}
+if (!process.argv[2]) console.log(`→ ${file}\n`);
+
+function latestProblem(): string | undefined {
+  const dir = 'neetcode-2026';
+  return readdirSync(dir)
+    .filter((f) => f.endsWith('.ts'))
+    .map((f) => join(dir, f))
+    .sort((a, b) => statSync(b).mtimeMs - statSync(a).mtimeMs)[0];
 }
 const src = readFileSync(file, 'utf8');
 const start = src.indexOf('// @lc code=start');
