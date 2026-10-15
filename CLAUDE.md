@@ -26,6 +26,7 @@ jeff 的个人 LeetCode 刷题记录，全部用 TypeScript,面向 **leetcode.cn
 3. **收尾**(review 通过后):
    - 提醒他提交:**先用插件提交**;报 `session expired` 就改去 leetcode.cn 网页提交(插件把 Cloudflare 403 误报成登录过期)。
    - Claude 只 `git add` 该题文件并提交,message 用 `feat: add leetcode <id> <英文题名> solution`。
+   - **提交完立刻 `git push`**(2026-10-15 他:「帮我每天push一下 激活一下我的github」;commit 邮箱 657121430@qq.com 已关联 GitHub 账号 jeffyqwang,推上去才计入贡献图)。⛔ 别攒着不推——那天一次推了 18 个。
    - 就职块**自动记账**(WakaTime 时长 + 当天提交的题号,`jobblock.py` 同步),⛔ 不用问他刷了多久。
    - 有复现或新的反射断点 → **直接**按 `/cuoti` 的格式记进错题本(复现=在原条目补「<题号> 复现」),⛔ 不用先问他(2026-10-13 他说「不用每次都问我」)。
    - 下一题:让他在 Raycast 敲 `lc`(不填题号 = 队列里的下一题)。
