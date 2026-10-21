@@ -57,7 +57,8 @@ try {
     const desc: string = JSON.parse(readFileSync(join(dir, hit), 'utf8')).desc ?? '';
     const text = desc.replace(/<[^>]+>/g, '').replace(/&quot;/g, '"').replace(/&nbsp;/g, ' ').replace(/&lt;/g, '<').replace(/&gt;/g, '>');
     const unordered = /任意顺序/.test(text);
-    for (const m of text.matchAll(/输入[:：]\s*(.+?)\s*\n\s*输出[:：]\s*(.+?)\s*\n/g)) {
+    // 输入可能跨多行(36 数独的 board),所以用 [\s\S]+? 而不是 .+?
+    for (const m of text.matchAll(/输入[:：]\s*([\s\S]+?)\s*\n\s*输出[:：]\s*(.+?)\s*\n/g)) {
       // "nums = [1,1,1,2,2,3], k = 2" → 按 `, 名字 =` 切参数
       const args = m[1].split(/,\s*(?=[A-Za-z_]\w*\s*=)/).map((p) => JSON.parse(p.replace(/^\s*[A-Za-z_]\w*\s*=\s*/, '')));
       const c = cases.find((x) => !('expect' in x) && JSON.stringify(x.args) === JSON.stringify(args));
