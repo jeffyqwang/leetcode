@@ -69,7 +69,17 @@ try {
   // 缓存读不到/题面格式变了:只是少了自动期望值,照常跑
 }
 
-if (!cases.length) {
+// 极限用例(插件不认,只给本地跑):输入太大写不进 case 块,用 JS 表达式现场生成,单独计时。
+//   // @big <名字> | <返回「参数数组」的 JS 表达式> | expect=<JSON>
+//   // @big 1e5 连续 | [Array.from({ length: 1e5 }, (_, i) => i)] | expect=100000
+// 每条单独起子进程跑,超过 BIG_TIMEOUT 判超时(O(n²) 在 1e5 上要跑几十秒,别等它)。
+const BIG_TIMEOUT = 5000;
+const bigs: { name: string; expr: string; expect?: string }[] = [];
+for (const m of src.matchAll(/^\/\/ @big (.+?) \| (.+?)(?: \| expect=(.+))?$/gm)) {
+  bigs.push({ name: m[1].trim(), expr: m[2].trim(), expect: m[3]?.trim() });
+}
+
+if (!cases.length && !bigs.length) {
   console.error('文件里没有 @lcpr case');
   process.exit(1);
 }
@@ -110,4 +120,33 @@ const dir = mkdtempSync(join(tmpdir(), 'lctest-'));
 const tmp = join(dir, 'run.ts');
 writeFileSync(tmp, driver);
 const r = spawnSync(process.execPath, ['--no-warnings', tmp], { stdio: 'inherit' });
-process.exit(r.status ?? 1);
+let status = r.status ?? 1;
+
+if (bigs.length) console.log('\n极限用例(只计函数本身耗时,超过 ' + BIG_TIMEOUT / 1000 + 's 判超时):');
+bigs.forEach((b, i) => {
+  const big = join(dir, `big${i}.ts`);
+  writeFileSync(
+    big,
+    `${code}
+const __args = ${b.expr};
+const __t = performance.now();
+const __v = ${fn}(...__args);
+console.log(JSON.stringify({ v: __v, ms: performance.now() - __t }));
+`,
+  );
+  const br = spawnSync(process.execPath, ['--no-warnings', big], { encoding: 'utf8', timeout: BIG_TIMEOUT });
+  if (br.error || br.status !== 0) {
+    status = 1;
+    const why = br.signal ? `⏱ 超时 >${BIG_TIMEOUT / 1000}s` : '💥 ' + (br.stderr.trim().split('\n').pop() ?? '');
+    console.log(`❌ ${b.name}  →  ${why}`);
+    return;
+  }
+  const { v, ms } = JSON.parse(br.stdout.trim().split('\n').pop()!);
+  const out = JSON.stringify(v);
+  const ok = b.expect === undefined || out === JSON.stringify(JSON.parse(b.expect));
+  if (!ok) status = 1;
+  // 1e5 规模下 O(n) / O(n log n) 都在几十 ms 内,过 1s 基本就是多了一层循环
+  const slow = ms > 1000 ? '  ⚠️ 慢' : '';
+  console.log(`${b.expect === undefined ? '  ' : ok ? '✅' : '❌'} ${b.name}  →  ${out.length > 60 ? out.slice(0, 60) + '…' : out}  (${ms.toFixed(1)}ms)${slow}${ok ? '' : '   (期望 ' + b.expect + ')'}`);
+});
+process.exit(status);

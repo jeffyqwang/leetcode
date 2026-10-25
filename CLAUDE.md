@@ -20,7 +20,7 @@ jeff 的个人 LeetCode 刷题记录，全部用 TypeScript,面向 **leetcode.cn
 
 1. **开工**:jeff 用 Raycast `lc` 打开下一题(lcpr 生成文件到 `neetcode-2026/`)。他说写完了 → 读该题文件 + `错题本.md`。
    - **日语对照(自动)**:`lc` 会在后台拉起 `shared-config/scripts/jobhunt/lc_jp.py`,文件一生成就插「【問題(日本語)】题干 + 制約 + 【用語】」并追加 `技術用語.md`(用语只取题干里的词,不剧透解法;日志 `~/.cache/jobhunt/lc_jp.log`)。review 时发现文件里没有日语段 → 手动补:`python3 ~/.claude/memory-backup-repo/shared-config/scripts/jobhunt/lc_jp.py <题号> --now`。review 中讨论到的解法用语(如 早期リターン)由 Claude 补进该题【用語】和 `技術用語.md`。
-2. **review / 优化**:**用例和期望值全由 Claude 负责**(2026-10-15 他:「为什么这种机械工作要我来…代码我来写就行了」)——题面示例 `yarn t` 自动取期望值;review 前 Claude 自己补反例(空/最小、全不重复、多位数/极端值、上限)并写好 `expect`/`expect~=`,跑一遍再提问。jeff 只写代码、回答问题。
+2. **review / 优化**:**用例和期望值全由 Claude 负责**(2026-10-15 他:「为什么这种机械工作要我来…代码我来写就行了」)——题面示例 `yarn t` 自动取期望值;review 前 Claude 自己补反例(空/最小、全不重复、多位数/极端值、上限)并写好 `expect`/`expect~=`;**按题目上限补 `@big` 极限用例**(1e5 规模、会让多一层循环暴露的输入,如大量重复起点),跑一遍再提问。jeff 只写代码、回答问题。
    **一次只问一个启发式问题,等他答完再问下一个**;不给答案,问题从「行为/复杂度/API 语义/取舍」里挑(API 知识直接告诉,见上)。
    对照错题本:踩中已有断点要点明「这是 A? 复现」。
 3. **收尾**(review 通过后):
@@ -34,7 +34,7 @@ jeff 的个人 LeetCode 刷题记录，全部用 TypeScript,面向 **leetcode.cn
 ## 命令
 
 - **构建(类型检查 + 产出):** `yarn build`(执行 `tsc`,产物到 `dist/`)。没有 lint / test 脚本。
-- **跑解答(本地,首选):** `yarn t`(不带参数 = 跑 `neetcode-2026/` 里最近改过的那道)或 `yarn t <题目文件.ts>` —— `scripts/lctest.ts` 抽出 `@lc code` 区的函数,用文件底部的 `@lcpr case` 逐个跑并打印输出;某个 `case=end` 下一行写 `// expect=<JSON>` 就自动判 ✅/❌;题目允许「任意顺序」返回时写 `// expect~=<JSON>`(顶层数组排序后再比)。VS Code 里 ⌘⇧P → `Tasks: Run Test Task` 跑当前文件。只支持函数题(设计题 class 暂不支持)。插件的 Test 和网页跑用例都慢/不稳,所以 jeff 写完先本地跑反例。
+- **跑解答(本地,首选):** `yarn t`(不带参数 = 跑 `neetcode-2026/` 里最近改过的那道)或 `yarn t <题目文件.ts>` —— `scripts/lctest.ts` 抽出 `@lc code` 区的函数,用文件底部的 `@lcpr case` 逐个跑并打印输出;某个 `case=end` 下一行写 `// expect=<JSON>` 就自动判 ✅/❌;题目允许「任意顺序」返回时写 `// expect~=<JSON>`(顶层数组排序后再比)。VS Code 里 ⌘⇧P → `Tasks: Run Test Task` 跑当前文件。**极限用例**:块注释里写 `// @big <名字> | <返回参数数组的 JS 表达式> | expect=<JSON>`,输入现场生成、每条单独子进程计时,>1s 标 ⚠️ 慢、>5s 判超时(插件不认这行,只本地跑)。只支持函数题(设计题 class 暂不支持)。插件的 Test 和网页跑用例都慢/不稳,所以 jeff 写完先本地跑反例。
 - **多解对比:** 想把一道题做透时,在 `neetcode-2026/<id>.<slug>/` 下放各解法(`export` 函数)+ `bench.ts`(判对错 + 计时),`node neetcode-2026/<id>.<slug>/bench.ts` 直接跑——Node 24 能直接执行 `.ts`(仅限无路径别名的独立文件)。样板见 `49.group-anagrams/`。
 - ⚠️ `tsconfig.json` 的 `include` 只有 `src/`,**`tsc -p .` 不检查 `neetcode-2026/`**;要检查单题用 `npx tsc --noEmit --target es2020 --lib es2020 <文件>`。
 
