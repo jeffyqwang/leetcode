@@ -24,7 +24,10 @@ jeff 的个人 LeetCode 刷题记录，全部用 TypeScript,面向 **leetcode.cn
    **一次只问一个启发式问题,等他答完再问下一个**;不给答案,问题从「行为/复杂度/API 语义/取舍」里挑(API 知识直接告诉,见上)。
    对照错题本:踩中已有断点要点明「这是 A? 复现」。
 3. **收尾**(review 通过后):
-   - 提醒他提交:**先用插件提交**;报 `session expired` 就改去 leetcode.cn 网页提交(插件把 Cloudflare 403 误报成登录过期)。
+   - 提醒他提交:**先用插件提交**。插件把**所有** 403/401 都报成 `session expired`,点按钮那条路径甚至不弹提示、只在 Output 日志里打一行 `[object Object]`(日志在 `~/Library/Application Support/Code/logs/<启动时间>/window1/exthost/output_logging_*/`;AC 与否以 `~/.lcpr/leetcode/stat.json` 有没有该题为准)。两种成因要分开:
+     - 响应体是 JSON `{"error":"User is not authenticated"}` → **cookie 真过期了**(约两周一次,10-13 登录 → 10-25 过期)→ 让他在插件里登出、用 Cookie 方式重新登录。
+     - 响应体是 Cloudflare 的 HTML 挑战页 → 改去 leetcode.cn 网页提交。
+     - 怎么看:插件内部命令 `node ~/.vscode/extensions/ccagml.vscode-leetcode-problem-rating-*/out/src/rpc/childMain.js submit <绝对路径>` 能复现;要看状态码和响应体,得包一层 `request` 打印(2026-10-26 就是这么查出来的)。
    - Claude 只 `git add` 该题文件并提交,message 用 `feat: add leetcode <id> <英文题名> solution`。
    - **提交完立刻 `git push`**(2026-10-15 他:「帮我每天push一下 激活一下我的github」;commit 邮箱 657121430@qq.com 已关联 GitHub 账号 jeffyqwang,推上去才计入贡献图)。⛔ 别攒着不推——那天一次推了 18 个。
    - 就职块**自动记账**(WakaTime 时长 + 当天提交的题号,`jobblock.py` 同步),⛔ 不用问他刷了多久。
