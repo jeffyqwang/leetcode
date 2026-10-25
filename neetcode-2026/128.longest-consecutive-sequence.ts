@@ -27,22 +27,20 @@
 // @lc code=start
 function longestConsecutive(nums: number[]): number {
   const numSet = new Set(nums);
-  const startnodes: Set<number> = new Set();
-  nums.forEach((v) => {
-    if (!numSet.has(v - 1)) {
-      startnodes.add(v);
-    }
-  });
+
   let longestLength = 0;
-  startnodes.forEach((v) => {
-    let i = v,
-      length = 1;
-    while (numSet.has(i + 1)) {
-      length++;
-      i++;
+  numSet.forEach((v) => {
+    if (!numSet.has(v - 1)) {
+      let i = v,
+        length = 1;
+      while (numSet.has(i + 1)) {
+        length++;
+        i++;
+      }
+      if (length > longestLength) longestLength = length;
     }
-    if (length > longestLength) longestLength = length;
   });
+
   return longestLength;
 }
 // @lc code=end
