@@ -30,7 +30,7 @@ jeff 的个人 LeetCode 刷题记录，全部用 TypeScript,面向 **leetcode.cn
      - 怎么看:插件内部命令 `node ~/.vscode/extensions/ccagml.vscode-leetcode-problem-rating-*/out/src/rpc/childMain.js submit <绝对路径>` 能复现;要看状态码和响应体,得包一层 `request` 打印(2026-10-26 就是这么查出来的)。
    - Claude 只 `git add` 该题文件并提交,message 用 `feat: add leetcode <id> <英文题名> solution`。
    - **提交完立刻 `git push`**(2026-10-15 他:「帮我每天push一下 激活一下我的github」;commit 邮箱 657121430@qq.com 已关联 GitHub 账号 jeffyqwang,推上去才计入贡献图)。⛔ 别攒着不推——那天一次推了 18 个。
-   - 就职块**自动记账**(编辑器时长 + 他在本仓 CC 会话里的讨论时长 + 当天提交的题号,`jobblock.py` 的 `lc_minutes` 同步;2026-10-26 他嫌只算编辑器「太苛刻」后加了讨论),⛔ 不用问他刷了多久。
+   - 就职块**自动记账**(编辑器时长 + 他在本仓 CC 会话里的讨论时长 + 当天提交的题号,`jobblock.py` 的 `lc_minutes` 同步;2026-10-26 他嫌只算编辑器「太苛刻」后加了讨论;间隔超过 5 分钟没回复也没改动 = 他切出去了,那段不算),⛔ 不用问他刷了多久。
    - 有复现或新的反射断点 → **直接**按 `/cuoti` 的格式记进错题本(复现=在原条目补「<题号> 复现」),⛔ 不用先问他(2026-10-13 他说「不用每次都问我」)。
    - 下一题:让他在 Raycast 敲 `lc`(不填题号 = 队列里的下一题)。
 
