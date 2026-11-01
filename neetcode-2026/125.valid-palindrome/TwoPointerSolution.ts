@@ -21,7 +21,7 @@ export function isPalindromeTwoPointer(s: string): boolean {
       j--;
       continue;
     }
-    if (s[i].toLocaleLowerCase() !== s[j].toLocaleLowerCase()) {
+    if (s[i].toLowerCase() !== s[j].toLowerCase()) {
       res = false;
       break;
     }
