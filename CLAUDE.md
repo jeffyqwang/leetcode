@@ -38,7 +38,7 @@ jeff 的个人 LeetCode 刷题记录，全部用 TypeScript,面向 **leetcode.cn
 
 - **构建(类型检查 + 产出):** `yarn build`(执行 `tsc`,产物到 `dist/`)。没有 lint / test 脚本。
 - **跑解答(本地,首选):** `yarn t`(不带参数 = 跑 `neetcode-2026/` 里最近改过的那道)或 `yarn t <题目文件.ts>` —— `scripts/lctest.ts` 抽出 `@lc code` 区的函数,用文件底部的 `@lcpr case` 逐个跑并打印输出;某个 `case=end` 下一行写 `// expect=<JSON>` 就自动判 ✅/❌;题目允许「任意顺序」返回时写 `// expect~=<JSON>`(顶层数组排序后再比)。VS Code 里 ⌘⇧P → `Tasks: Run Test Task` 跑当前文件。**极限用例**:块注释里写 `// @big <名字> | <返回参数数组的 JS 表达式> | expect=<JSON>`,输入现场生成、每条单独子进程计时,>1s 标 ⚠️ 慢、>5s 判超时(插件不认这行,只本地跑)。只支持函数题(设计题 class 暂不支持)。插件的 Test 和网页跑用例都慢/不稳,所以 jeff 写完先本地跑反例。
-- **多解对比:** 想把一道题做透时,在 `neetcode-2026/<id>.<slug>/` 下放各解法(`export` 函数)+ `bench.ts`(判对错 + 计时),`node neetcode-2026/<id>.<slug>/bench.ts` 直接跑——Node 24 能直接执行 `.ts`(仅限无路径别名的独立文件)。样板见 `49.group-anagrams/`。
+- **多解对比:** ⛔ 文件夹、解法文件骨架(签名 + `TODO(human)`)、把主解搬成 `export` 版、`bench.ts` **全由 Claude 建好**,jeff 只填逻辑(2026-11-02 他:「你来新建 我只管写逻辑 别把这种工作交给我」)。想把一道题做透时,在 `neetcode-2026/<id>.<slug>/` 下放各解法(`export` 函数)+ `bench.ts`(判对错 + 计时),`node neetcode-2026/<id>.<slug>/bench.ts` 直接跑——Node 24 能直接执行 `.ts`(仅限无路径别名的独立文件)。样板见 `49.group-anagrams/`。
 - ⚠️ `tsconfig.json` 的 `include` 只有 `src/`,**`tsc -p .` 不检查 `neetcode-2026/`**;要检查单题用 `npx tsc --noEmit --target es2020 --lib es2020 <文件>`。
 
 ## 解答文件结构
