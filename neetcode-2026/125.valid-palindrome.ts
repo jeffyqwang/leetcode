@@ -44,8 +44,8 @@ function isPalindrome(s: string): boolean {
 }
 // @lc code=end
 
-// TODO(练习 2026-10-26 留): 写一版 O(1) 额外空间的双指针 —— 不生成 newS,左右指针各自跳过非字母数字、比较时统一小写。
-// 实测参考:现版 0.43ms vs O(1) 版 0.54ms(2e5),O(1) 版省内存不省时间。写好后放 125.valid-palindrome/TwoPointerSolution.ts。
+// 练习(2026-11-02 完成):O(1) 额外空间双指针版见 125.valid-palindrome/TwoPointerSolution.ts,对比跑 bench.ts。
+// 实测要点:逐字符判断时正则 test 比直接比字符慢约 3 倍,是 O(1) 版变慢的主因;toLocaleLowerCase 只慢 5~10%。
 
 /*
 // @lcpr case=start
